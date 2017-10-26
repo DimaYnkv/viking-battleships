@@ -1,5 +1,6 @@
 package com.dymster.battleshiptempname;
 
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,8 @@ import android.widget.Toast;
 
 public class GameBoardActivity extends AppCompatActivity {
 
+    public final int TURN_PLAYER = 1;
+    public final int TURN_OPPONENT = 2;
     public final int GRID_COLUMN_COUNT = 10;
     public final int GRID_ROW_COUNT = 10;
 
@@ -21,7 +24,6 @@ public class GameBoardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_board);
     }
-
 
     public void prepGameBoard(View view) {
         gameGrid = (GridLayout) findViewById(R.id.gridview_game_board);
@@ -41,7 +43,7 @@ public class GameBoardActivity extends AppCompatActivity {
                 final String toast = "onclicked - tag = " + cellView.getTag();
                 cellView.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
-                        ///TODO: onClick action - shoot
+                        shoot(view);
                         Toast.makeText(getApplicationContext(), toast, Toast.LENGTH_LONG).show();
                     }
                 });
@@ -73,5 +75,45 @@ public class GameBoardActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    public void shoot(View target){
+
+        //TODO:
+
+        ///Hit
+        this.hit(target);
+        //2.2. give player another turn
+
+        ///Miss
+        this.miss(target);
+        //3.2. switch to opponent turn
+    }
+
+    private void hit(final View view){
+        MediaPlayer player = MediaPlayer.create(getApplicationContext(), R.raw.explode);
+        player.start();
+        view.setBackgroundResource(R.drawable.explode_hit);
+        view.setAlpha(0f);
+        view.animate().alpha(1f).setDuration(1000).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                view.animate().alpha(0f).setDuration(300).withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.setBackgroundResource(R.drawable.green_hit);
+                        view.setAlpha(1f);
+                    }
+                });
+            }
+        });
+    }
+
+    private void miss(final View view){
+//        MediaPlayer player = MediaPlayer.create(getApplicationContext(), R.raw.water_splash);
+//        player.start();
+        view.setBackgroundResource(R.drawable.red_miss);
+        view.setAlpha(0f);
+        view.animate().alpha(1f).setDuration(1000);
     }
 }
